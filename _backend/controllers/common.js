@@ -233,7 +233,7 @@ Provide a 1-sentence encouraging explanation of why these schemes are highly ben
                     
                     const completion = await groq.chat.completions.create({
                         messages: [{ role: 'system', content: 'You are an expert on Indian Government Agricultural Schemes.' }, { role: 'user', content: prompt }],
-                        model: 'llama-3.3-70b-versatile',
+                        model: 'openai/gpt-oss-120b',
                         temperature: 0.3
                     });
                     aiExplanation = completion.choices[0].message.content.trim();

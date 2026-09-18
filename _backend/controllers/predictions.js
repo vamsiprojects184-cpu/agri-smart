@@ -60,7 +60,7 @@ DO NOT output any markdown blocks or explanations. Only the plain JSON text.`;
 
         const completion = await groq.chat.completions.create({
             messages: [{ role: 'user', content: prompt }],
-            model: 'llama-3.3-70b-versatile',
+            model: 'openai/gpt-oss-120b',
             temperature: 0.2, // Low temp for more deterministic numbers
             response_format: { type: 'json_object' }
         });
@@ -122,7 +122,7 @@ Provide a 2-sentence financial advisory for the farmer. Should they invest more 
             
             const completion = await groq.chat.completions.create({
                 messages: [{ role: 'system', content: 'You are a Financial Advisor for Farmers.' }, { role: 'user', content: prompt }],
-                model: 'llama-3.3-70b-versatile',
+                model: 'openai/gpt-oss-120b',
                 temperature: 0.3
             });
             aiAdvisory = completion.choices[0].message.content.trim();

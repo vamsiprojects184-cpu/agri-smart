@@ -48,7 +48,7 @@ async function handleConversationalCrop(req, res) {
                     role: 'user', 
                     content: `Recommend crops for these farm conditions: ${JSON.stringify(answers)}` 
                 }],
-                model: 'llama-3.3-70b-versatile',
+                model: 'openai/gpt-oss-120b',
                 response_format: { type: 'json_object' }
             });
             return res.json({ success: true, data: { isComplete: true, ...JSON.parse(completion.choices[0].message.content) } });
@@ -97,7 +97,7 @@ async function handleCropRecommendation(req, res) {
 
         const completion = await groq.chat.completions.create({
             messages: [{ role: 'system', content: 'You are an Agricultural Advisor. Output valid JSON only.' }, { role: 'user', content: prompt }],
-            model: 'llama-3.3-70b-versatile',
+            model: 'openai/gpt-oss-120b',
             response_format: { type: 'json_object' },
             temperature: 0.2
         });
@@ -143,7 +143,7 @@ async function handleDiseaseDetection(req, res) {
                     { type: 'image_url', image_url: { url: imageUrl } }
                 ] 
             }],
-            model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+            model: 'qwen/qwen3.8-27b',
             temperature: 0.1
         });
 
@@ -218,7 +218,7 @@ async function handleVoiceAssistant(req, res) {
                 role: 'user', 
                 content: String(query) // Force string 
             }],
-            model: 'llama-3.3-70b-versatile',
+            model: 'openai/gpt-oss-120b',
             response_format: { type: 'json_object' }
         });
 
@@ -248,7 +248,7 @@ async function handleSoilHealth(req, res) {
                 role: 'user', 
                 content: `Soil Type: ${soilType}, Region: ${state}` 
             }],
-            model: 'llama-3.3-70b-versatile',
+            model: 'openai/gpt-oss-120b',
             response_format: { type: 'json_object' }
         });
         res.json({ success: true, data: JSON.parse(completion.choices[0].message.content) });

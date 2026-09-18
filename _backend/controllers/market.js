@@ -33,7 +33,7 @@ async function handleMarketAdvisory(req, res) {
 
         const completion = await groq.chat.completions.create({
             messages: [{ role: 'system', content: 'You are a Market Analyst. Output valid JSON only.' }, { role: 'user', content: prompt }],
-            model: 'llama-3.3-70b-versatile',
+            model: 'openai/gpt-oss-120b',
             response_format: { type: 'json_object' },
             temperature: 0.2
         });
