@@ -13,6 +13,7 @@ const common = require('./controllers/common');
 const health = require('./controllers/health');
 const groqService = require('./controllers/groqService');
 const predictions = require('./controllers/predictions');
+const iot = require('./controllers/iot');
 
 const app = express();
 app.use(cors());
@@ -75,6 +76,23 @@ app.post('/api/health/members', health.handleCreateFamilyMember);
 app.get('/api/health/records', health.handleGetHealthRecords);
 app.post('/api/health/records', health.handleCreateHealthRecord);
 
+// Virtual IoT Farm Simulation & Decision Engine Routes
+app.get('/api/iot/sensors', iot.handleGetSensors);
+app.post('/api/iot/sensors', iot.handleUpdateSensors);
+app.get('/api/iot/history', iot.handleGetHistory);
+app.get('/api/iot/events', iot.handleGetEvents);
+app.post('/api/iot/scenario', iot.handleLoadScenario);
+app.post('/api/iot/decision', iot.handleEvaluateDecision);
+app.post('/api/iot/pump', iot.handlePumpControl);
+app.post('/api/iot/auto-mode', iot.handleToggleAutoMode);
+app.post('/api/iot/emergency-stop', iot.handleEmergencyStop);
+app.get('/api/iot/farm-status', iot.handleEvaluateDecision);
+
+// Direct /iot route support
+app.get('/iot', (req, res) => {
+    res.redirect('/dashboard.html#iot');
+});
+
 // Legacy single entry point compatibility
 app.all('/api/ai', async (req, res) => {
     const action = req.query.action || req.body.action;
@@ -105,7 +123,7 @@ app.all('/api/manage', async (req, res) => {
     try {
         switch(action) {
             case 'dashboard': return manage.handleGetDashboard(req, res);
-            case 'pump_control': return manage.handlePumpControl(req, res);
+            case 'pump_control': return iot.handlePumpControl(req, res);
             case 'seed_check': return manage.handleSeedCheck(req, res);
             case 'admin_users': return manage.handleAdminUsers(req, res);
             case 'delete_user': return manage.handleDeleteUser(req, res);

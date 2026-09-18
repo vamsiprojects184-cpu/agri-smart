@@ -66,6 +66,9 @@
                 <li class="nav-item" onclick="navigate('dash')"><i class="ph ph-chart-pie-slice"></i> <span
                         data-i18n="nav_dashboard">Dashboard</span>
                 </li>
+                <li class="nav-item" onclick="navigate('iot')"><i class="ph ph-circuitry"></i> <span
+                        data-i18n="nav_iot">Smart Farm IoT</span>
+                </li>
                 <li class="nav-item" onclick="navigate('farmer_tools')"><i class="ph ph-toolbox"></i> <span
                         data-i18n="nav_tools">Farmer Tools</span>
                 </li>
@@ -94,9 +97,9 @@
                 <i class="ph ph-house"></i>
                 <span data-i18n="nav_home">Dashboard</span>
             </div>
-            <div class="mobile-nav-item" onclick="navigate('water')" data-target="water">
-                <i class="ph ph-drop"></i>
-                <span data-i18n="irrigation">Water</span>
+            <div class="mobile-nav-item" onclick="navigate('iot')" data-target="iot">
+                <i class="ph ph-circuitry"></i>
+                <span data-i18n="nav_iot">Smart IoT</span>
             </div>
             <div class="mobile-nav-item" onclick="interactMobileVoice()" data-target="voice">
                 <div class="mobile-mic-container" id="mobile-mic-btn">
@@ -118,8 +121,8 @@
             <div class="more-card" onclick="navigate('connect'); toggleMoreMenu()">
                 <i class="ph ph-chats"></i> <span data-i18n="connect">Connect</span>
             </div>
-            <div class="more-card" onclick="navigate('irrigation'); toggleMoreMenu()">
-                <i class="ph ph-drop"></i> <span data-i18n="irrigation">Irrigation</span>
+            <div class="more-card" onclick="navigate('iot'); toggleMoreMenu()">
+                <i class="ph ph-circuitry"></i> <span data-i18n="nav_iot">Smart Farm IoT</span>
             </div>
             <div class="more-card" onclick="navigate('farmer_tools'); toggleMoreMenu()">
                 <i class="ph ph-toolbox"></i> <span data-i18n="nav_tools">Farmer Tools</span>
@@ -742,79 +745,403 @@
                 </div>
             </section>
 
-            <section id="irrigation" class="page-section">
-                <h2>⚡ Smart Irrigation (IoT Control)</h2>
-                <div class="row mb-4" id="iot-node-container">
-                    <!-- Dynamic Gauges Loaded via JS -->
-                    <div class="col-md-3">
-                        <div class="glass-card text-center" style="border-bottom: 3px solid var(--accent);">
-                            <div class="iot-gauge">
-                                <svg class="gauge-svg" width="100" height="100">
-                                    <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
-                                    <circle class="gauge-fill" cx="50" cy="50" r="40" style="stroke-dashoffset: 150;">
-                                    </circle>
-                                </svg>
-                                <div class="gauge-value">40%</div>
+            <!-- 7. Smart Farm IoT & Kisan AI Decision Engine -->
+            <section id="iot" class="page-section">
+                <!-- Top Header & Transparency Banner -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                    <div>
+                        <h2 class="mb-1"><i class="ph ph-circuitry text-accent"></i> 🌐 Smart Farm IoT</h2>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="badge bg-success bg-opacity-20 text-accent border border-success border-opacity-30">
+                                <i class="ph ph-broadcast"></i> LIVE SENSING ●
+                            </span>
+                            <span class="badge bg-light bg-opacity-10 text-white-50 border border-white border-opacity-10">
+                                SIMULATION MODE • Virtual IoT Sensor (ESP32-Ready)
+                            </span>
+                            <span class="small opacity-50 ms-1"><i class="ph ph-clock"></i> <span id="iot-last-update">Syncing...</span></span>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-light btn-sm rounded-pill px-3" onclick="IotService.fetchSensors()">
+                            <i class="ph ph-arrows-clockwise"></i> Refresh Telemetry
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hackathon Demo Status Banner (Active during WOW simulation) -->
+                <div id="demo-flow-status" class="glass-card mb-3 p-3 border-accent" style="display: none; background: rgba(74, 222, 128, 0.08); border-left: 4px solid var(--accent);"></div>
+
+                <!-- 1. Farm Brain Status & Decision Hero Card -->
+                <div class="glass-card mb-4 p-4" style="border-left: 5px solid var(--accent); background: rgba(0,0,0,0.35);">
+                    <div class="row align-items-center g-3">
+                        <div class="col-lg-7">
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <span class="badge bg-success px-3 py-2 fs-6 rounded-pill" id="farm-status-badge">
+                                    <i class="ph ph-circle-fill fs-6 me-1"></i> HEALTHY
+                                </span>
+                                <h4 class="mb-0 fw-bold letter-spacing-1">🧠 KISAN AI FARM BRAIN</h4>
+                                <span class="badge bg-dark border border-white border-opacity-10 small" id="farm-decision-conf">Confidence: 96%</span>
                             </div>
-                            <h5 class="mb-0">Node 101</h5>
-                            <span class="text-success small"><i class="ph ph-wifi-high"></i> Online</span>
+                            <div class="mb-2">
+                                <span class="small fw-bold text-accent">Why? </span>
+                                <span class="small opacity-90" id="farm-decision-reason">Evaluating real-time multi-factor telemetry...</span>
+                            </div>
+                            <div class="d-flex flex-wrap align-items-center gap-3">
+                                <div>
+                                    <span class="small fw-bold text-white-50">Recommendation: </span>
+                                    <span class="small text-white fw-semibold" id="farm-decision-recom">Soil moisture and ambient weather in optimal equilibrium.</span>
+                                </div>
+                                <div class="ms-auto">
+                                    <span class="small text-white-50">Action: </span>
+                                    <span class="badge bg-accent text-dark fw-bold px-2 py-1" id="farm-decision-action">NONE</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hackathon WOW Demo Runner & Preset Scenarios -->
+                        <div class="col-lg-5 border-start border-white border-opacity-10 ps-lg-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small fw-bold text-uppercase opacity-75"><i class="ph ph-film-strip text-warning"></i> Demo Scenarios</span>
+                                <span class="x-small text-accent">1-Click Simulation</span>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                <button class="btn btn-sm btn-outline-light rounded-pill py-1 px-2 small" onclick="IotService.loadScenario('dry')">🏜️ Dry Farm</button>
+                                <button class="btn btn-sm btn-outline-light rounded-pill py-1 px-2 small" onclick="IotService.loadScenario('rain')">🌧️ Rain Coming</button>
+                                <button class="btn btn-sm btn-outline-light rounded-pill py-1 px-2 small" onclick="IotService.loadScenario('healthy')">🌿 Healthy</button>
+                                <button class="btn btn-sm btn-outline-light rounded-pill py-1 px-2 small" onclick="IotService.loadScenario('heat')">🔥 Heat Stress</button>
+                                <button class="btn btn-sm btn-outline-light rounded-pill py-1 px-2 small" onclick="IotService.loadScenario('disease')">🦠 Spore Risk</button>
+                            </div>
+                            <button class="btn btn-success w-100 fw-bold py-2 rounded-3 shadow-lg d-flex align-items-center justify-content-center gap-2" 
+                                    style="background: linear-gradient(135deg, #22c55e, #15803d); border: 1px solid #4ade80;"
+                                    onclick="IotService.runDemoSimulation()">
+                                <i class="ph ph-play-circle fs-5"></i> ▶ RUN FARM SIMULATION
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="row">
-                    <!-- Interactive Field Map -->
-                    <div class="col-md-7">
-                        <div class="glass-card"
-                            style="position: relative; height: 350px; overflow: hidden; background: rgba(0,0,0,0.2);">
-                            <h4 class="mb-3"><i class="ph ph-map-trifold"></i> Field Topology</h4>
-                            <div
-                                style="position: absolute; top:50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.3;">
-                                <i class="ph ph-columns" style="font-size: 15rem; color: var(--accent);"></i>
-                            </div>
-                            <!-- Pump Visualization -->
-                            <div style="position: absolute; top: 100px; left: 150px; text-align: center;">
-                                <div id="pump-visual"
-                                    style="width: 60px; height: 60px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #ccc;">
-                                    <i class="ph ph-engine" style="font-size: 2rem;"></i>
+                <!-- 2. Main Live Sensor Cards Grid -->
+                <div class="row g-3 mb-4">
+                    <!-- Soil Moisture Card -->
+                    <div class="col-md-4 col-sm-6">
+                        <div class="glass-card h-100 p-3" style="border-bottom: 3px solid var(--accent);">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <span class="text-white-50 small fw-bold">🌱 Soil Moisture</span>
+                                    <h3 class="fw-bold mb-0 text-white" id="val-soil-moist">28%</h3>
                                 </div>
-                                <span class="small">Main Pump</span>
+                                <span class="badge bg-success bg-opacity-25 text-accent border border-success border-opacity-30" id="status-soil-moist">OPTIMAL</span>
                             </div>
-                            <div style="position: absolute; bottom: 40px; right: 40px;" class="text-muted small">
-                                <i class="ph ph-info"></i> Interactive map showing active irrigation zones
+                            <div class="progress mb-2" style="height: 6px; background: rgba(255,255,255,0.1);">
+                                <div id="bar-soil-moist" class="progress-bar bg-accent" style="width: 28%; transition: width 0.4s ease;"></div>
+                            </div>
+                            <div class="d-flex justify-content-between x-small opacity-50 mb-2">
+                                <span>0% Dry</span>
+                                <span>Target: 30%</span>
+                                <span>100% Saturated</span>
+                            </div>
+                            <!-- Live Slider for Demo -->
+                            <div class="mt-2 pt-2 border-top border-white border-opacity-10">
+                                <label class="x-small text-white-50 d-flex justify-content-between mb-1">
+                                    <span>Simulator Slider</span>
+                                    <span class="text-accent">Drag to test</span>
+                                </label>
+                                <input type="range" min="0" max="100" value="28" id="slider-soil-moist" class="form-range" style="accent-color: var(--accent);">
                             </div>
                         </div>
                     </div>
 
-                    <!-- Control Panel -->
-                    <div class="col-md-5">
-                        <div class="glass-card h-100">
-                            <h4><i class="ph ph-sliders"></i> Master Control</h4>
-                            <hr style="opacity: 0.1;">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
+                    <!-- Ambient Temperature Card -->
+                    <div class="col-md-4 col-sm-6">
+                        <div class="glass-card h-100 p-3" style="border-bottom: 3px solid #f59e0b;">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
                                 <div>
-                                    <h5 class="mb-0">Main Water Pump</h5>
-                                    <p class="text-muted small mb-0" id="pump-status-label">Status: Manual Mode</p>
+                                    <span class="text-white-50 small fw-bold">🌡️ Ambient Temp</span>
+                                    <h3 class="fw-bold mb-0 text-white" id="val-temp">29.5°C</h3>
                                 </div>
-                                <label class="switch">
-                                    <input type="checkbox" id="pump-master-toggle" onchange="controlPump(this.checked)">
-                                    <span class="slider round"></span>
+                                <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-30" id="status-temp">NORMAL</span>
+                            </div>
+                            <div class="progress mb-2" style="height: 6px; background: rgba(255,255,255,0.1);">
+                                <div id="bar-temp" class="progress-bar bg-warning" style="width: 59%; transition: width 0.4s ease;"></div>
+                            </div>
+                            <div class="d-flex justify-content-between x-small opacity-50 mb-2">
+                                <span>10°C Frost</span>
+                                <span>Optimal: 26-30°C</span>
+                                <span>50°C Heat Stress</span>
+                            </div>
+                            <div class="mt-2 pt-2 border-top border-white border-opacity-10">
+                                <label class="x-small text-white-50 d-flex justify-content-between mb-1">
+                                    <span>Simulator Slider</span>
+                                    <span class="text-warning">Adjust temperature</span>
                                 </label>
+                                <input type="range" min="10" max="50" value="29.5" id="slider-temp" class="form-range" style="accent-color: #f59e0b;">
                             </div>
+                        </div>
+                    </div>
 
-                            <div class="soil-report-box mb-3">
-                                <div class="d-flex align-items-center gap-2 mb-2">
-                                    <i class="ph ph-brain" style="color: var(--accent);"></i>
-                                    <strong>AI Recommendation</strong>
+                    <!-- Relative Humidity Card -->
+                    <div class="col-md-4 col-sm-6">
+                        <div class="glass-card h-100 p-3" style="border-bottom: 3px solid #38bdf8;">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <span class="text-white-50 small fw-bold">💦 Air Humidity</span>
+                                    <h3 class="fw-bold mb-0 text-white" id="val-humidity">62%</h3>
                                 </div>
-                                <p class="small text-muted mb-0" id="irrigation-ai-tip">
-                                    Sensors detect low moisture in Zone B. Recommended watering: 15 minutes.
-                                </p>
+                                <span class="badge bg-info bg-opacity-25 text-info border border-info border-opacity-30" id="status-humidity">OPTIMAL</span>
+                            </div>
+                            <div class="progress mb-2" style="height: 6px; background: rgba(255,255,255,0.1);">
+                                <div id="bar-humidity" class="progress-bar bg-info" style="width: 62%; transition: width 0.4s ease;"></div>
+                            </div>
+                            <div class="d-flex justify-content-between x-small opacity-50 mb-2">
+                                <span>20% Arid</span>
+                                <span>Mold threshold: >85%</span>
+                                <span>100% Sat.</span>
+                            </div>
+                            <div class="mt-2 pt-2 border-top border-white border-opacity-10">
+                                <label class="x-small text-white-50 d-flex justify-content-between mb-1">
+                                    <span>Simulator Slider</span>
+                                    <span class="text-info">Adjust humidity</span>
+                                </label>
+                                <input type="range" min="10" max="100" value="62" id="slider-humidity" class="form-range" style="accent-color: #38bdf8;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Water Tank Level Card -->
+                    <div class="col-md-4 col-sm-6">
+                        <div class="glass-card h-100 p-3" style="border-bottom: 3px solid #60a5fa;">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <span class="text-white-50 small fw-bold">💧 Water Tank Reservoir</span>
+                                    <h3 class="fw-bold mb-0 text-white" id="val-tank">75%</h3>
+                                </div>
+                                <span class="badge bg-primary bg-opacity-25 text-primary border border-primary border-opacity-30" id="status-tank">SUFFICIENT</span>
+                            </div>
+                            <div class="progress mb-2" style="height: 6px; background: rgba(255,255,255,0.1);">
+                                <div id="bar-tank" class="progress-bar bg-primary" style="width: 75%; transition: width 0.4s ease;"></div>
+                            </div>
+                            <div class="d-flex justify-content-between x-small opacity-50 mb-2">
+                                <span>0% Empty</span>
+                                <span>Safety Cutoff: 20%</span>
+                                <span>100% Full</span>
+                            </div>
+                            <div class="mt-2 pt-2 border-top border-white border-opacity-10">
+                                <label class="x-small text-white-50 d-flex justify-content-between mb-1">
+                                    <span>Simulator Slider</span>
+                                    <span class="text-primary">Water level</span>
+                                </label>
+                                <input type="range" min="0" max="100" value="75" id="slider-tank" class="form-range" style="accent-color: #60a5fa;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rain Probability Card -->
+                    <div class="col-md-4 col-sm-6">
+                        <div class="glass-card h-100 p-3" style="border-bottom: 3px solid #a855f7;">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <span class="text-white-50 small fw-bold">🌧️ Rain Probability (Weather)</span>
+                                    <h3 class="fw-bold mb-0 text-white" id="val-rain">15%</h3>
+                                </div>
+                                <span class="badge bg-purple bg-opacity-25 text-purple border border-purple border-opacity-30" id="status-rain">CLEAR SKY</span>
+                            </div>
+                            <div class="progress mb-2" style="height: 6px; background: rgba(255,255,255,0.1);">
+                                <div id="bar-rain" class="progress-bar" style="width: 15%; background: #a855f7; transition: width 0.4s ease;"></div>
+                            </div>
+                            <div class="d-flex justify-content-between x-small opacity-50 mb-2">
+                                <span>0% Dry</span>
+                                <span>Delay Cutoff: 70%</span>
+                                <span>100% Downpour</span>
+                            </div>
+                            <div class="mt-2 pt-2 border-top border-white border-opacity-10">
+                                <label class="x-small text-white-50 d-flex justify-content-between mb-1">
+                                    <span>Simulator Slider</span>
+                                    <span style="color: #a855f7;">Forecast Rain %</span>
+                                </label>
+                                <input type="range" min="0" max="100" value="15" id="slider-rain" class="form-range" style="accent-color: #a855f7;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Secondary Soil & Solar Card -->
+                    <div class="col-md-4 col-sm-6">
+                        <div class="glass-card h-100 p-3 d-flex flex-column justify-content-between">
+                            <span class="text-white-50 small fw-bold mb-2">🧪 Secondary Soil & Flux</span>
+                            <div class="d-flex justify-content-between align-items-center py-1 border-bottom border-white border-opacity-10">
+                                <span class="small opacity-75">Soil pH:</span>
+                                <span class="small fw-bold text-accent" id="val-ph">6.8 (Neutral)</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-1 border-bottom border-white border-opacity-10">
+                                <span class="small opacity-75">NPK Ratio:</span>
+                                <span class="small fw-bold text-info" id="val-npk">N:140 P:32 K:175</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-1 border-bottom border-white border-opacity-10">
+                                <span class="small opacity-75">Solar Radiation:</span>
+                                <span class="small fw-bold text-warning" id="val-light">34.5k Lux</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-1">
+                                <span class="small opacity-75">Flow Meter:</span>
+                                <span class="small fw-bold text-white" id="val-flow">0 L/min</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Closed-Loop Actuation, Safety Layer & Digital Twin -->
+                <div class="row g-4 mb-4">
+                    <!-- Left Column: Closed-Loop Pump Actuator & Safety Controls -->
+                    <div class="col-lg-5">
+                        <div class="glass-card h-100 p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="mb-0 fw-bold"><i class="ph ph-faucet text-accent"></i> Irrigation Actuator</h4>
+                                <span class="badge bg-secondary" id="iot-pump-badge">STANDBY (OFF)</span>
                             </div>
 
-                            <button class="btn btn-outline-light w-100 btn-sm" onclick="fetchIotData()">
-                                <i class="ph ph-arrows-counter-clockwise"></i> Refresh Sensor Network
+                            <!-- Master Switch -->
+                            <div class="p-3 rounded-3 mb-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <div class="fw-bold">Main Irrigation Pump</div>
+                                        <div class="x-small opacity-50">Submersible Motor Node • 72 L/min</div>
+                                    </div>
+                                    <div class="form-check form-switch fs-4 m-0">
+                                        <input class="form-check-input" type="checkbox" id="iot-pump-switch" 
+                                               onchange="IotService.controlPump(this.checked)" style="cursor: pointer;">
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center x-small opacity-75">
+                                    <span>Target Moisture Limit:</span>
+                                    <span class="badge bg-dark border border-white border-opacity-20 text-accent">30% (Auto Cutoff)</span>
+                                </div>
+                            </div>
+
+                            <!-- Autonomous Auto Mode -->
+                            <div class="p-3 rounded-3 mb-3" style="background: rgba(74, 222, 128, 0.04); border: 1px solid rgba(74, 222, 128, 0.15);">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-bold text-accent"><i class="ph ph-robot"></i> Kisan AI Auto-Mode</div>
+                                        <div class="x-small opacity-75">Closed-loop autonomous decision & actuation</div>
+                                    </div>
+                                    <div class="form-check form-switch fs-4 m-0">
+                                        <input class="form-check-input" type="checkbox" id="iot-auto-toggle" checked 
+                                               onchange="IotService.toggleAutoMode(this.checked)" style="cursor: pointer; accent-color: var(--accent);">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Safety Layer Checklist -->
+                            <div class="mb-3">
+                                <span class="x-small fw-bold text-uppercase text-white-50">🛡️ Safety Layer Interlocks</span>
+                                <div class="d-flex flex-column gap-1 mt-1">
+                                    <div class="small d-flex align-items-center gap-2 opacity-80">
+                                        <i class="ph ph-check-circle text-success"></i> Water Tank Level Check (>20% required)
+                                    </div>
+                                    <div class="small d-flex align-items-center gap-2 opacity-80">
+                                        <i class="ph ph-check-circle text-success"></i> Maximum 30-min Motor Burnout Timer Guard
+                                    </div>
+                                    <div class="small d-flex align-items-center gap-2 opacity-80">
+                                        <i class="ph ph-check-circle text-success"></i> Rain Delay Override Check (>70% rain halts pump)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- EMERGENCY STOP BUTTON -->
+                            <button id="iot-emergency-btn" class="btn btn-danger w-100 fw-bold py-2 shadow" 
+                                    onclick="IotService.triggerEmergencyStop(false)">
+                                <i class="ph ph-warning-octagon fs-5 me-1"></i> EMERGENCY STOP
                             </button>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: 2D Farm Digital Twin -->
+                    <div class="col-lg-7">
+                        <div class="glass-card h-100 p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="mb-0 fw-bold"><i class="ph ph-map-pin text-accent"></i> 🌾 2D Farm Digital Twin</h4>
+                                <span class="badge bg-dark border border-white border-opacity-10 x-small">Sector 4 • 2.5 Acres</span>
+                            </div>
+
+                            <!-- 2D Canvas Graphic Representation -->
+                            <div class="flex-grow-1 rounded-4 p-3 position-relative overflow-hidden d-flex flex-column justify-content-between" 
+                                 style="min-height: 240px; background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.9) 100%); border: 1px solid rgba(255,255,255,0.1);">
+                                
+                                <!-- Field Crop Grid with Dynamic Soil Reaction -->
+                                <div id="twin-field-grid" class="d-flex justify-content-around py-3 px-2 rounded-3 mb-2" 
+                                     style="background: rgba(34, 197, 94, 0.1); border: 1px dashed rgba(74, 222, 128, 0.3); transition: filter 0.5s ease;">
+                                    <div class="text-center"><i class="ph ph-plant fs-2 text-accent"></i><div class="x-small opacity-50">Row 1</div></div>
+                                    <div class="text-center"><i class="ph ph-plant fs-2 text-accent"></i><div class="x-small opacity-50">Row 2</div></div>
+                                    <div class="text-center"><i class="ph ph-plant fs-2 text-accent"></i><div class="x-small opacity-50">Row 3</div></div>
+                                    <div class="text-center"><i class="ph ph-plant fs-2 text-accent"></i><div class="x-small opacity-50">Row 4</div></div>
+                                    <div class="text-center"><i class="ph ph-plant fs-2 text-accent"></i><div class="x-small opacity-50">Row 5</div></div>
+                                </div>
+
+                                <!-- Field Actuators & Nodes Map -->
+                                <div class="row align-items-center g-3 text-center">
+                                    <!-- Reservoir Tank Visual -->
+                                    <div class="col-4">
+                                        <div class="p-2 rounded-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+                                            <div class="x-small opacity-75 mb-1">Water Reservoir</div>
+                                            <div class="mx-auto position-relative" style="width: 36px; height: 60px; border: 2px solid #60a5fa; border-radius: 6px; overflow: hidden; background: rgba(0,0,0,0.3);">
+                                                <div id="twin-tank-bar" style="position: absolute; bottom: 0; width: 100%; height: 75%; background: linear-gradient(180deg, #60a5fa, #2563eb); transition: height 0.4s ease;"></div>
+                                            </div>
+                                            <div class="x-small text-info mt-1">Tank 1</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Main Pump Visual -->
+                                    <div class="col-4">
+                                        <div class="p-2 rounded-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+                                            <div class="x-small opacity-75 mb-1">Actuator Pump</div>
+                                            <div id="twin-pump-visual" class="mx-auto rounded-circle d-flex align-items-center justify-content-center" 
+                                                 style="width: 50px; height: 50px; border: 2px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.4); transition: all 0.3s ease;">
+                                                <i class="ph ph-engine fs-3 text-white"></i>
+                                            </div>
+                                            <div class="x-small text-accent mt-1">Submersible</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- IoT Telemetry Node -->
+                                    <div class="col-4">
+                                        <div class="p-2 rounded-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+                                            <div class="x-small opacity-75 mb-1">Sensor Node</div>
+                                            <div class="mx-auto rounded-circle d-flex align-items-center justify-content-center" 
+                                                 style="width: 50px; height: 50px; border: 2px solid var(--accent); background: rgba(74, 222, 128, 0.1);">
+                                                <i class="ph ph-broadcast fs-3 text-accent"></i>
+                                            </div>
+                                            <div class="x-small text-success mt-1"><i class="ph ph-wifi-high"></i> Node 101</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Real-time Telemetry History Graph & Event Log -->
+                <div class="row g-4">
+                    <!-- Sensor History Chart -->
+                    <div class="col-lg-7">
+                        <div class="glass-card p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0 fw-bold"><i class="ph ph-chart-line text-accent"></i> Telemetry Stream (Recent 10 Mins)</h5>
+                                <span class="x-small opacity-50">Chart.js Real-time Sync</span>
+                            </div>
+                            <div style="height: 220px; position: relative;">
+                                <canvas id="iotTelemetryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Farm Event Timeline -->
+                    <div class="col-lg-5">
+                        <div class="glass-card p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0 fw-bold"><i class="ph ph-clock-counter-clockwise text-accent"></i> Farm Activity Log</h5>
+                                <button class="btn btn-sm btn-link text-accent p-0 text-decoration-none x-small" onclick="IotService.fetchSensors()">Refresh</button>
+                            </div>
+                            <div id="iot-events-list" style="max-height: 220px; overflow-y: auto; scrollbar-width: thin;">
+                                <!-- Populated dynamically by iotService.js -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3450,6 +3777,7 @@
     <script src="js/commandContext.js"></script>
     <script src="js/actionEngine.js"></script>
     <script src="js/commandProcessor.js"></script>
+    <script src="js/iotService.js"></script>
     <script src="js/app-optimized.js" defer></script>
 </body>
 </html>

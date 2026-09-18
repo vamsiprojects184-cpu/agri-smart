@@ -143,7 +143,7 @@
 
             // 3. Show/Hide Sections
             document.querySelectorAll('.page-section').forEach(el => {
-                const isTarget = el.id === pageId;
+                const isTarget = el.id === pageId || (pageId === 'irrigation' && el.id === 'iot') || (pageId === 'water' && el.id === 'iot');
                 el.classList.toggle('active', isTarget);
                 if (isTarget) {
                     // Trigger animations
@@ -152,6 +152,9 @@
                         syncHomeWeatherStation();
                     }
                     if (pageId === 'expenses') setTimeout(initExpenseCharts, 50);
+                    if (pageId === 'iot' || pageId === 'irrigation') {
+                        if (window.IotService) window.IotService.fetchSensors();
+                    }
                 }
             });
 
@@ -164,6 +167,9 @@
             if (pageId === 'admin') loadAdminData();
             if (pageId === 'health') loadHealthDashboard();
             if (pageId === 'agriSmart') updateDashFamilyCount();
+            if (pageId === 'iot' || pageId === 'irrigation') {
+                if (window.IotService) window.IotService.fetchSensors();
+            }
             if (pageId === 'profile' || pageId === 'agriSmart' || pageId === 'dash') {
                 // Debounce history fetch
                 clearTimeout(window._historyDebounce);

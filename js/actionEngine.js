@@ -44,6 +44,18 @@ const ActionEngine = {
             case 'crop_suggestion':
                 this.handleCropSuggestion(json);
                 break;
+            case 'control_pump':
+                if (window.IotService) window.IotService.controlPump(json.params?.status !== false);
+                this.handleNavigate('iot');
+                break;
+            case 'farm_status':
+            case 'check_farm':
+                this.handleNavigate('iot');
+                break;
+            case 'auto_mode':
+                if (window.IotService) window.IotService.toggleAutoMode(json.params?.auto_mode !== false);
+                this.handleNavigate('iot');
+                break;
             case 'form_fill':
                 this.handleFormFill(json);
                 break;
@@ -78,7 +90,7 @@ const ActionEngine = {
         else if (target.includes('health') || target.includes('medical')) pageId = 'health';
         else if (target.includes('community') || target.includes('forum')) pageId = 'community';
         else if (target.includes('store') || target.includes('buy') || target.includes('marketplace')) pageId = 'marketplace';
-        else if (target.includes('water') || target.includes('irrigat')) pageId = 'irrigation';
+        else if (target.includes('iot') || target.includes('farm') || target.includes('water') || target.includes('irrigat')) pageId = 'iot';
         else if (target.includes('profit') || target.includes('finance')) pageId = 'profit_intel';
         else if (target.includes('expense')) pageId = 'expenses';
         else if (target.includes('profile') || target.includes('account')) pageId = 'profile';

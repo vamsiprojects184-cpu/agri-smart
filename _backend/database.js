@@ -44,7 +44,45 @@ function initDB() {
             id TEXT PRIMARY KEY, name TEXT, username TEXT, email TEXT, state TEXT,
             land_size REAL, primary_crop TEXT, social_category TEXT, last_updated DATETIME
         )`);
-        console.log("Database schema verified.");
+        db.run(`CREATE TABLE IF NOT EXISTS sensor_readings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            farm_id TEXT DEFAULT 'farm_01',
+            soil_moisture REAL,
+            temperature REAL,
+            humidity REAL,
+            water_level REAL,
+            rain_probability REAL,
+            source TEXT DEFAULT 'simulator',
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+        db.run(`CREATE TABLE IF NOT EXISTS farm_decisions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            farm_id TEXT DEFAULT 'farm_01',
+            status TEXT,
+            reason TEXT,
+            recommendation TEXT,
+            action TEXT,
+            confidence REAL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+        db.run(`CREATE TABLE IF NOT EXISTS farm_actions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            farm_id TEXT DEFAULT 'farm_01',
+            actuator TEXT,
+            state TEXT,
+            reason TEXT,
+            source TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+        db.run(`CREATE TABLE IF NOT EXISTS iot_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            farm_id TEXT DEFAULT 'farm_01',
+            type TEXT,
+            message TEXT,
+            icon TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+        console.log("Database schema verified (including IoT tables).");
     });
     db.close();
 }

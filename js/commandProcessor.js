@@ -97,9 +97,25 @@
         else if (text.includes('profit') || text.includes('expense') || text.includes('income') || text.includes('cost')) {
             respond('Opening Profit Calculator', 'expenses');
         }
-        // Smart Irrigation / IoT
-        else if (text.includes('irrigat') || text.includes('water pump') || text.includes('sensor') || text.includes('iot')) {
-            respond('Opening Smart Irrigation', 'irrigation');
+        // Smart Irrigation / Virtual Farm IoT
+        else if (text.includes('irrigat') || text.includes('water pump') || text.includes('sensor') || text.includes('iot') || text.includes('farm') || text.includes('soil moisture')) {
+            if (text.includes('turn on') || text.includes('start pump') || text.includes('start irrigat')) {
+                if (window.IotService) window.IotService.controlPump(true);
+                respond('Starting irrigation pump now.', 'iot');
+            } else if (text.includes('turn off') || text.includes('stop pump') || text.includes('stop irrigat')) {
+                if (window.IotService) window.IotService.controlPump(false);
+                respond('Stopping irrigation pump.', 'iot');
+            } else if (text.includes('auto') || text.includes('automatic')) {
+                const enable = !text.includes('disable') && !text.includes('off');
+                if (window.IotService) window.IotService.toggleAutoMode(enable);
+                respond(`Autonomous farm mode ${enable ? 'enabled' : 'disabled'}.`, 'iot');
+            } else if (text.includes('soil moisture') || text.includes('moisture')) {
+                const s = window.IotService ? window.IotService.getState().sensors : null;
+                const m = s ? s.soil_moisture : 28;
+                respond(`Current soil moisture is ${m} percent.`, 'iot');
+            } else {
+                respond('Opening Smart Farm IoT dashboard.', 'iot');
+            }
         }
         // Marketplace (buy/sell store)
         else if (text.includes('marketplace') || text.includes('store') || text.includes('buy seed') || text.includes('fertilizer store')) {

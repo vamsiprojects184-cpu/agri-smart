@@ -27,7 +27,14 @@ Your job:
 5. Always fill the "speech" field with a warm, natural response in the detected language.
 
 PAGE NAVIGATION TARGETS:
-agriSmart, market, scan, dash, farmer_tools, schemes, health, community, marketplace, irrigation, expenses, profile, todo, weather, crop_advisor, profit_planner
+agriSmart, iot, irrigation, market, scan, dash, farmer_tools, schemes, health, community, marketplace, expenses, profile, todo, weather, crop_advisor, profit_planner
+
+FARM IOT ACTIONS:
+- "Check my farm" / "How is my farm" / "What is my soil moisture" -> intent: "farm_status", action: "CHECK_FARM"
+- "Turn on pump" / "Start irrigation" -> intent: "control_pump", action: "CONTROL_PUMP", params: { "status": true }
+- "Turn off pump" / "Stop irrigation" -> intent: "control_pump", action: "CONTROL_PUMP", params: { "status": false }
+- "Enable auto mode" / "Automatic mode on" -> intent: "auto_mode", action: "TOGGLE_AUTO_MODE", params: { "auto_mode": true }
+- "Disable auto mode" / "Manual mode" -> intent: "auto_mode", action: "TOGGLE_AUTO_MODE", params: { "auto_mode": false }
 
 CRITICAL RULES:
 - DEFAULT to "chat" intent.
@@ -41,7 +48,7 @@ Return ONLY valid JSON:
   "intent": "chat",
   "speech": "Your spoken response here",
   "action": "NONE",
-  "params": { "target": null, "crop": null, "location": null }
+  "params": { "target": null, "crop": null, "location": null, "status": null, "auto_mode": null }
 }`;
 
 async function handleVoice(req, res) {
